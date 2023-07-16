@@ -3,14 +3,24 @@ from image_widgets import *
 from menu import *
 from PIL import Image,ImageEnhance,ImageTk,ImageFilter,ImageOps
 from settings import *
+from options import ThemeDropDownPanel
+
 
 class App(ctk.CTk):
-	def __init__(self):
+	def __init__(self,theme,colourmode,themename):
+		print(colourmode,theme)
 		super().__init__()
-		ctk.set_appearance_mode('dark')
+		ctk.set_appearance_mode(f'{colourmode}')
+		#ctk.set_default_color_theme('pinktheme.json')
+		#ctk.set_appearance_mode									_default_color_theme('green')
+		#ctk.set_appearance_mode('light')
+		#ctk.set_appearance_mode('blue')
+		ctk.set_default_color_theme(f'{theme}')
+		self.themename=themename
 		self.geometry('1000x600')
-		self.title('Photo editor')
+		self.title('Aidans Photo editor')
 		self.minsize(900,500)
+		self.iconbitmap("icons.ico")
 
 		#layout
 		self.rowconfigure(0,weight=1)
@@ -66,6 +76,9 @@ class App(ctk.CTk):
 		self.image= ImageOps.crop(image=self.image,border=self.pos_vars['zoom'].get())
 
 
+
+
+
 		if self.pos_vars['flip'].get()=='X':
 			self.image=ImageOps.mirror(self.image)
 		if self.pos_vars['flip'].get()=='Y':
@@ -102,6 +115,7 @@ class App(ctk.CTk):
 			self.image=self.image.filter(ImageFilter.EDGE_ENHANCE_MORE)
 
 		self.place_image()
+		
 	def import_image(self,path):
 		self.original=Image.open(path)
 		self.image=self.original
@@ -110,7 +124,7 @@ class App(ctk.CTk):
 		self.image_import.pack_forget()
 		self.image_output=ImageOutput(self,self.resize_image)
 		self.close_button=CloseOutput(self,self.close_image)
-		self.menu=Menu(self,self.pos_vars,self.colour_vars,self.effect_vars,self.export_image)
+		self.menu=Menu(self,self.pos_vars,self.colour_vars,self.effect_vars,self.export_image,self.themename)
 
 
 
@@ -118,13 +132,6 @@ class App(ctk.CTk):
 		self.image_output.grid_forget()
 		self.menu.grid_forget()
 		self.image_import=ImageImport(self,self.import_image)
-
-	
-
-
-
-
-
 
 	def resize_image(self,event):
 
@@ -148,6 +155,44 @@ class App(ctk.CTk):
 
 	def export_image(self,name,file,path):
 		exportstring=f'{path}/{name}.{file}'
+		print(f'export string:',exportstring)
 		self.image.save(exportstring)
 
-App()
+
+
+
+
+class ThemeSelector(ctk.CTk):
+	def __init__(self):
+		super().__init__()
+
+		self.geometry('400x400')
+		self.title('theme selector')
+		self.minsize(400,400)
+		self.iconbitmap("icons.ico")
+		self.configure(background='pink')
+		self.themename=ctk.StringVar(value='blue')
+		self.themeselector=ThemeDropDownPanel(self,self.themename,['blue','green',
+			'pink','red','purple','black'])
+		okbutton=ctk.CTkButton(self,text='confirm',command=self.themeconfirm)
+		okbutton.pack(expand=True)
+
+		#run
+		self.mainloop()
+
+	def themeconfirm(self):
+		themedict={'blue':('blue','dark'),
+		'green':('green','light'),
+		'pink':('themes/pinktheme.json','light'),
+		'red':('themes/red.json','light'),
+		'purple':('themes/purple.json','light'),
+		'black':('themes/black.json','light')}
+
+
+
+		self.destroy()
+		App(themedict[self.themename.get()][0],themedict[self.themename.get()][1],self.themename.get())
+
+
+ThemeSelector()
+#App()

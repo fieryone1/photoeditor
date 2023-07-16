@@ -5,6 +5,7 @@ FLIP_OPTIONS=['None','X','Y','Both']
 BLUR_DEFAULT=0
 CONTRAST_DEFAULT=0
 EFFECT_OPTIONS=['None','Emboss','Find edges','Contour','Edge enhance']
+THEME_OPTIONS=['blue','green','pink']
 BRIGHTNESS_DEFAULT=1
 VIBRANCE_DEFAULT=1
 GRAYSCALE_DEFAULT=False

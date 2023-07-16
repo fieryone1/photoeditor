@@ -4,9 +4,11 @@ from tkinter import ttk
 from tkinter import filedialog,Canvas
 from settings import *
 
+
+
 class Panel(ctk.CTkFrame):
 	def __init__(self,parent):
-		super().__init__(parent,fg_color=DARK_GREY)
+		super().__init__(parent,fg_color='transparent')
 		self.pack(fill='x',pady=4,ipady=8)
 		#ctk.CTkSlider(self).pack()
 
@@ -34,10 +36,10 @@ class SegmentPanel(Panel):
 		ctk.CTkLabel(self,text=text).pack()
 		ctk.CTkSegmentedButton(self,variable=data_var,values=options).pack(expand=True,fill='both',padx=5,pady=5)
 class SwitchPanel(Panel):
-	def __init__(self,parent,*switches):
+	def __init__(self,parent,theme,*switches):
 		super().__init__(parent)
 		for var,text in switches:
-			switch=ctk.CTkSwitch(self,text=text,variable=var,button_color = BLUE,fg_color=SLIDER_BG)
+			switch=ctk.CTkSwitch(self,text=text,variable=var,button_color =f'{theme}')
 			switch.pack(side='left',expand=True,fill='both',padx=5,pady=5)
 
 
@@ -45,6 +47,14 @@ class DropDownPanel(ctk.CTkOptionMenu):
 	def __init__(self,parent,data_var,options):
 		super().__init__(parent,values=options,variable=data_var,fg_color=DARK_GREY,command=lambda event:print(data_var.get()))
 		self.pack(pady=5,fill='x')
+
+
+class ThemeDropDownPanel(ctk.CTkOptionMenu):
+	def __init__(self,parent,data_var,options):
+		super().__init__(parent,values=options,variable=data_var,fg_color=DARK_GREY,command=lambda event:print(data_var.get()))
+		self.pack(pady=5,expand=True)
+
+
 
 class RevertButton(ctk.CTkButton):
 	def __init__(self,parent,*args):
@@ -103,11 +113,35 @@ class FilePath(Panel):
 class SaveButton(ctk.CTkButton):
 	def __init__(self,parent,export_image,name,file,path):
 		super().__init__(parent,text='save',command=self.save)
-
+		self.parent=parent
+		self.imagedel=None
+		self.patherror=None
 		self.export_image=export_image
 		self.name=name
 		self.file=file
 		self.path=path 
+		
 	def save(self):
-		self.export_image(self.name.get(),self.file.get(),self.path.get())
-		#print(self.name.get(),self.file.get(),self.path.get())
+		if self.imagedel:
+			self.imagedelete(self.imagedel)
+		if self.patherror:
+			self.imagedelete(self.patherror)
+
+		if self.name.get() and self.file.get() and self.path.get():
+			try:
+				self.export_image(self.name.get(),self.file.get(),self.path.get())
+				savedlabel=ctk.CTkLabel(self.parent,text='saved successfully')
+				savedlabel.pack(expand=True)	
+				self.imagedel=savedlabel		
+			except:
+				patherrorlabel=ctk.CTkLabel(self.parent,text='please enter a valid file path')
+				patherrorlabel.pack(expand=True)
+				self.patherror=patherrorlabel
+		else:
+			deletelabel=ctk.CTkLabel(self.parent,text='please fill in all entry fields')
+			deletelabel.pack(expand=True)
+			self.imagedel=deletelabel
+	
+	def imagedelete(self,label):
+		label.pack_forget()
+

@@ -2,8 +2,9 @@ import customtkinter as ctk
 from options import *
 
 
+
 class Menu(ctk.CTkTabview):
-	def __init__(self,parent,pos_vars,colour_vars,effect_vars,export_image):
+	def __init__(self,parent,pos_vars,colour_vars,effect_vars,export_image,theme):
 		super().__init__(parent)
 		self.grid(row=0,column=0,sticky='nsew',padx=5)
 
@@ -15,9 +16,11 @@ class Menu(ctk.CTkTabview):
 
 		#frames
 		PositionFrame(self.tab('Position'),pos_vars)
-		ColourFrame(self.tab('Colour'),colour_vars)
+		ColourFrame(self.tab('Colour'),colour_vars,theme)
 		EffectFrame(self.tab('Effects'),effect_vars)
 		ExportFrame(self.tab('Export'),export_image)
+
+
 
 class PositionFrame(ctk.CTkFrame):
 	def __init__(self,parent,pos_vars):
@@ -27,11 +30,12 @@ class PositionFrame(ctk.CTkFrame):
 		SliderPanel(self,'Zoom',pos_vars['zoom'],0,200)
 		SegmentPanel(self,'Inverse',pos_vars['flip'],FLIP_OPTIONS)
 		RevertButton(self,(pos_vars['rotate'],ROTATE_DEFAULT),(pos_vars['zoom'],ZOOM_DEFAULT),(pos_vars['flip'],FLIP_OPTIONS[0]))
+
 class ColourFrame(ctk.CTkFrame):
-	def __init__(self,parent,colour_vars):
+	def __init__(self,parent,colour_vars,theme):
 		super().__init__(parent)
 		self.pack(expand=True,fill='both')
-		SwitchPanel(self,(colour_vars['greyscale'],'black/white'),(colour_vars['invert'],'Invert'))
+		SwitchPanel(self,theme,(colour_vars['greyscale'],'black/white'),(colour_vars['invert'],'Invert'))
 		SliderPanel(self,'Brightness',colour_vars['brightness'],0,10)
 		SliderPanel(self,'Vibrance',colour_vars['vibrance'],0,5)
 		RevertButton(self,
